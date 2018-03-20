@@ -2,25 +2,23 @@
 #coding:utf-8
 from time import sleep,ctime
 import thread
+from multiprocessing import Process,Lock
+import pdb
+import os
 
-loops=[4,2]  #休眠时间
-def loop(nloop,nsec,lock):
-  print u"开始 \n\t",ctime()
-  sleep(nsec)
-  print u"loop \n\t",ctime()
-  lock.release()
+def sub_pro(l,num):
+  l.acquire()
+  print os.getpid(),'has',num
+  l.release()
 
-def loop2():
-  print u"loop2 开始 \n\t",ctime()
-  locks=[]
-  nloops=range(len(loops))
-  for i in nloops:
-     lock=thread.allocate()
-     lock.acquire()
-     locks.append(lock)
-  for i in nloops:
-     thread.start_new_thread(loop,(i,loops[i],locks[i]))
-#  sleep(5)
-  print "all_done \n\t",ctime()
 
-loop2()
+if __name__=="__main__":
+#def main():
+  lock=Lock()
+  for i in range(10):
+    p=Process(target=sub_pro,args=(lock,i))
+    p.start()
+    p.join()
+
+#if "__name__"=="__main__":
+#  main()
